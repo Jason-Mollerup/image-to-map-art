@@ -108,6 +108,7 @@ const Pallet = ({ pallet, setPallet, generate }) => {
                   justifyContent: 'center',
                   alignItems: 'center',
                   cursor: 'pointer',
+                  border: '0.05em solid lightgray',
                 }}
                 onClick={() => handleClick(index)}
               >
@@ -122,6 +123,11 @@ const Pallet = ({ pallet, setPallet, generate }) => {
                   textTransform: 'capitalize',
                   alignSelf: 'center',
                   fontSize: 'x-small',
+                  overflow: 'hidden',
+                  textAlign: 'left',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                  width: '90%',
                 }}
               >
                 {block.split('_').join(' ')}
