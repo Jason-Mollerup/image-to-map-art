@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { PALLET } from '../constants/pallet'
 import Pallet from './Pallet'
 import Commands from './Commands'
