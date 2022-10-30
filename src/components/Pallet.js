@@ -100,10 +100,10 @@ const Pallet = ({ pallet, setPallet, generate }) => {
               <div
                 style={{
                   backgroundColor: `rgba(${color.join(', ')}, 1)`,
-                  borderRadius: '5px',
+                  borderRadius: '100px',
                   marginRight: '10px',
-                  width: '16px',
-                  height: '16px',
+                  width: '20px',
+                  height: '18px',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
