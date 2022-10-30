@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { PALLET } from '../constants/pallet'
 import Pallet from './Pallet'
 import Commands from './Commands'
@@ -109,15 +109,16 @@ const createCommands = (pallet, context, myImage, outputContext, setCommands) =>
 const ImageToCommands = () => {
   const [pallet, setPallet] = useState(PALLET)
   const [name, setName] = useState(null)
+  const [image, setImage] = useState(null)
   const [commands, setCommands] = useState([])
 
   const handleClick = () => {
     document.getElementById('file-input').click()
   }
 
-  const handleChange = (e) => {
-    const file = e.target.files[0]
-    setName(file.name)
+  const generate = (fileIn, palletIn) => {
+    const file = image || fileIn
+    const palletForUse = palletIn || pallet
     const reader = new FileReader()
     reader.readAsDataURL(file)
     reader.onloadend = (e) => {
@@ -135,9 +136,16 @@ const ImageToCommands = () => {
         outputCanvas.width = myImage.width // Assigns image's width to canvas
         outputCanvas.height = myImage.height // Assigns image's height to canvas
         outputContext.drawImage(myImage, 0, 0) // Draws the image on canvas
-        createCommands(pallet, myContext, myImage, outputContext, setCommands)
+        createCommands(palletForUse.filter(i => i.selected), myContext, myImage, outputContext, setCommands)
       }
     }
+  }
+
+  const handleChange = (e) => {
+    const file = e.target.files[0]
+    setName(file.name)
+    setImage(file)
+    generate(file)
   }
 
   return (
@@ -220,7 +228,7 @@ const ImageToCommands = () => {
           width: '100%',
         }}
       >
-        <Pallet pallet={pallet} setPallet={setPallet} />
+        <Pallet pallet={pallet} setPallet={setPallet} generate={generate}/>
       </div>
 
       <div

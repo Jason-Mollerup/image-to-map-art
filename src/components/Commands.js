@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCopy } from '@fortawesome/free-regular-svg-icons'
 
 const commandsStyles = {
   borderRadius: '10px',
@@ -33,7 +35,7 @@ const pageNavStyles = {
     cursor: 'pointer',
   },
   wrapperCurrent: {
-    backgroundColor: 'rgba(25, 150, 30, 0.2)',
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
     borderRadius: '100px',
     boxShadow: '0px 0px 3px rgba(0, 0, 0, 0.3)',
     fontSize: 'small',
@@ -60,6 +62,7 @@ const textareaStyles = {
   resize: 'none',
   borderRadius: '5px',
   border: '0.08em solid #D3D5D7',
+  fontSize: 'small',
   fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
 }
 
@@ -70,7 +73,6 @@ const Commands = ({ commands }) => {
   const [command, setCommand] = useState(commands[0])
 
   useEffect(() => {
-    console.log(commands)
     setCommand(commands[0])
     setCurrentCommands(commands)
   }, [commands])
@@ -85,6 +87,11 @@ const Commands = ({ commands }) => {
     tempCommands[page] = e.target.value
     setCurrentCommands(tempCommands)
     setCommand(e.target.value)
+  }
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(command);
+    window.alert('Copied command to clipboard')
   }
 
   const setPageNav = () => {
@@ -107,8 +114,25 @@ const Commands = ({ commands }) => {
 
   return (
     <div style={commandsStyles}>
-      <div style={{margin: '10px'}}>
-        {currentCommands.length > 0 ? `Commands: ${currentCommands.length}` : 'Commands:'}
+      <div
+        style={{
+          margin: '10px',
+          display: 'flex',
+          flexDirection: 'row',
+        }}
+      >
+        <div style={{paddingRight: '10px'}}>
+          {currentCommands.length > 0 ? `Commands: ${currentCommands.length}` : 'Commands:'}
+        </div>
+        <div
+          style={{
+            cursor: 'pointer',
+            display: command ? 'block' : 'none'
+          }}
+          onClick={handleCopy}
+        >
+          <FontAwesomeIcon icon={faCopy} />
+        </div>
       </div>
       <textarea
         style={textareaStyles}
