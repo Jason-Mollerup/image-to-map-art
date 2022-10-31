@@ -74,9 +74,19 @@ const createCommands = (pallet, context, myImage, outputContext, setCommands) =>
   let row = []
   let x = 0
   let z = height - 1
-  let commandLength = 0
-  for (let i = 0; i < data.length; i += 4) {
-    // get closest block and color
+  // let commandLength = 0
+
+  // chain info
+  let chain = {
+    block: 'none',
+    start: 0,
+    stop: 0,
+    length: 0,
+  }
+  let wasRowEnd = false
+
+  for (let i = 0; i < data.length + 4; i += 4) {
+    const isRowEnd = (i + 4) % (width * 4) === 0
     const {block, color} = closestBlock([data[i], data[i + 1], data[i + 2]], pallet)
 
     // change output image to match PALLET
@@ -85,25 +95,61 @@ const createCommands = (pallet, context, myImage, outputContext, setCommands) =>
     outputData.data[i + 2] = color[2]
     outputData.data[i + 3] = 255;
 
-    // generate command
-    const command = `/setblock ~${x === 0 ? '' : x} ~ ~${z} ${block}; `
-    row.push(command)
-    commandLength += command.length
-
-    if (commandLength > 30000) {
-      out.push(row.join(''))
-      row = []
-      commandLength = 0
+    // determine command
+    if (block !== chain.block || wasRowEnd) {
+      const myZ = wasRowEnd ? z + 1 : z
+      const command = chain.length > 0
+        ? fillCommand([chain.start, myZ], [chain.stop, myZ], chain.block)
+        : setCommand([chain.start, myZ], chain.block)
+      row.push(command)
+      // commandLength += command.length
+      chain.block = block
+      chain.start = x === 0 ? 0 : x - 1
+      chain.stop = x === 0 ? 0 : x - 1
+      chain.length = 0
+      wasRowEnd = false
+    } else {
+      chain.stop++
+      chain.length++
     }
 
-    if ((i + 4) % (width * 4) === 0) {
+    // come back to this
+    // if (commandLength > 32000) {
+    //   out.push(row.join(''))
+    //   row = []
+    //   commandLength = 0
+    // }
+
+    if (row.length > 10000) {
+      out.push(row.join('\n'))
+      row = []
+    }
+
+    if (isRowEnd) {
+      wasRowEnd = true
+      // new row values
       x = 0
       z--
     }
+
+    // next pixel
     x++
+  }
+  if (out === []) {
+    out.push(row.slice(1, row.length).join('\n'))
   }
   outputContext.putImageData(outputData, 0, 0)
   setCommands(out)
+}
+
+const fillCommand = (startArr, endArr, block) => {
+  const [startX, startZ, endX, endZ] = [...startArr, ...endArr].map(i => i === 0 ? '' : i)
+  return `fill ~${startX} ~ ~${startZ} ~${endX} ~ ~${endZ} ${block}`
+}
+
+const setCommand = (startArr, block) => {
+  const [startX, startZ] = startArr.map(i => i === 0 ? '' : i)
+  return `setblock ~${startX} ~ ~${startZ} ${block}`
 }
 
 const ImageToCommands = () => {
