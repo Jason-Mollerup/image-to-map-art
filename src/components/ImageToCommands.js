@@ -121,7 +121,11 @@ const createCommands = (pallet, context, myImage, outputContext, setCommands) =>
     // }
 
     if (row.length > 10000) {
-      out.push(row.join('\n'))
+      if (out.legth === 0) {
+        out.push(row.slice(1, row.length).join('\n'))
+      } else {
+        out.push(row.join('\n'))
+      }
       row = []
     }
 
@@ -135,7 +139,7 @@ const createCommands = (pallet, context, myImage, outputContext, setCommands) =>
     // next pixel
     x++
   }
-  if (out === []) {
+  if (out.length === 0) {
     out.push(row.slice(1, row.length).join('\n'))
   }
   outputContext.putImageData(outputData, 0, 0)
